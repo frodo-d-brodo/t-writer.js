@@ -17,7 +17,11 @@ const defaultOptions = {
   cursorClass: 'cursor-span',
 
   typeColor: 'black',
-  cursorColor: 'black'
+  cursorColor: 'black',
+
+  onAddChar: () => {},
+  onDeleteChar: () => {},
+  onLastChar: () => {}
 }
 
 class Cursor {
@@ -81,7 +85,7 @@ class Typewriter {
   }
 
   // USER API
-
+  // #region
   type (str) {
     this.queue.push({
       type: 'type',
@@ -246,7 +250,7 @@ class Typewriter {
     this.running = true
     this.deleteAll().then(_ => this.loop(0))
   }
-
+  // #endregion
   // ACTIONS (promises)
 
   add(content) {
@@ -373,11 +377,13 @@ class Typewriter {
 
   deleteChar() {
     this.text = this.text.slice(0, -1)
+    this.options.onDeleteChar();
     this.render()
   }
 
   addChar(char) {
     this.text += char
+    this.options.onAddChar();
     this.render()
   }
 
@@ -461,7 +467,7 @@ class Typewriter {
       if (this.options.loop) {
         this.start()
       }
-      return
+      return this.onLastChar()
     }
 
     this.step(idx).then(_ => {
