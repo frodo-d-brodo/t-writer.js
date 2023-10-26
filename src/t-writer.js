@@ -467,7 +467,7 @@ class Typewriter {
       if (this.options.loop) {
         this.start()
       }
-      return this.onLastChar()
+      return this.options.onLastChar()
     }
 
     this.step(idx).then(_ => {
