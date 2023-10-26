@@ -1,5 +1,5 @@
 {
-  "name": "t-writer.js",
+  "name": "t-writer.js-plus",
   "version": "1.0.4",
   "description": "Native typewriter effect, without compromises or dependencies.",
   "main": "dist/t-writer.js",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ChrisCavs/t-writer.js.git"
+    "url": "git+https://github.com/ku1og4m3/t-writer.js.git"
   },
   "keywords": [
     "typewriter",
@@ -20,10 +20,15 @@
     "write",
     "writer"
   ],
+  "contributors": [
+    {
+      "name": "Christopher Cavalea",
+      "email": "chriscavs94@gmail.com",
+      "url": "http://chriscavs.github.io/"
+    }
+  ],
   "author": {
-    "name": "Christopher Cavalea",
-    "email": "chriscavs94@gmail.com",
-    "url": "http://chriscavs.github.io/"
+    "name": "JP"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
