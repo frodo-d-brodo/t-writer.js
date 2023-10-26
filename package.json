@@ -1,6 +1,6 @@
 {
   "name": "t-writer.js-plus",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Native typewriter effect, without compromises or dependencies.",
   "main": "dist/t-writer.js",
   "license": "MIT",
@@ -28,7 +28,8 @@
     }
   ],
   "author": {
-    "name": "JP"
+    "name": "JP Kuykendall",
+    "email": "jp@svac.com"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
