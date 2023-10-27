@@ -1,6 +1,7 @@
 const defaultOptions = {
   loop: false,
   animateCursor: true,
+  preventWordWrap: false,
 
   blinkSpeed: 400,
 
@@ -18,6 +19,8 @@ const defaultOptions = {
 
   typeColor: 'black',
   cursorColor: 'black',
+
+  wordWrapLineLengthLimit: 0,
 
   onAddChar: () => {},
   onDeleteChar: () => {},
@@ -80,6 +83,9 @@ class Typewriter {
     this.text = ''
     this.queue = []
     this.options = Object.assign({}, defaultOptions, options)
+
+    if (this.options.preventWordWrap && this.options.wordWrapLineLengthLimit < 1)
+      throw Error("Line length limit must be greater than 0.")
 
     this.createTextEl()
   }
@@ -252,10 +258,60 @@ class Typewriter {
   }
   // #endregion
   // ACTIONS (promises)
-
+  // #region
   add(content) {
     let count = 0
+    let currentWordTrueBounds = {
+      startIndex: 0,
+      endIndex: 0,
+    }
     this.timestamp = Date.now()
+
+    const newlineToPreventWordWrap = (content, count) => {
+      const trueLength = content.length + this.text.length;
+      // If printed content + printing content is within the limit or divisible by the limit, return nothing
+      if (trueLength <= this.options.wordWrapLineLengthLimit || trueLength % this.options.wordWrapLineLengthLimit === 0)
+        return;
+
+      const trueCount = count + this.text.length;
+
+      // If limit would be surpassed while printing current char, return newline
+      if (content[count] === " ") {
+        return trueCount % this.options.wordWrapLineLengthLimit === 1
+          ? '\n'
+          : ''
+      }
+
+      // If current char is nth (n >= 2) char of the current word, return nothing
+      //  (because newline logic only needs to run between words and on the first char of a word)
+      if (trueCount > currentWordTrueBounds.startIndex && trueCount <= currentWordTrueBounds.endIndex)
+        return;
+
+      const currentWordBounds = {
+        startIndex: content.lastIndexOf(" ", content[count]) + 1,
+        endIndex: content.indexOf(" ", content[count])
+      }
+
+      currentWordTrueBounds = {
+        startIndex: currentWordBounds.startIndex + this.text.length,
+        endIndex: currentWordBounds.endIndex + this.text.length
+      }
+
+      // If current char is 1st char of a word...
+      // -> If limit would be surpassed while printing this word, return newline
+      if(trueCount === currentWordTrueBounds.startIndex) {
+        const arrayRange = (floorLimit, ceilingLimit, delta) =>
+          Array.from(
+          { length: (ceilingLimit - floorLimit) / delta + 1 },
+          (value, idx) => floorLimit + idx * delta
+        );
+
+        return arrayRange(currentWordTrueBounds.startIndex, currentWordTrueBounds.endIndex, 1)
+          .some(x => x % this.options.wordWrapLineLengthLimit === 1)
+          ? '\n'
+          : ''
+      }
+    }
 
     return new Promise((resolve, _) => {
 
@@ -266,7 +322,7 @@ class Typewriter {
         const change = newStamp - this.timestamp
 
         if (change >= this.getTypeSpeed()) {
-          this.addChar(content[count])
+          this.addChar(newlineToPreventWordWrap(content, count) + content[count])
           this.timestamp = newStamp
           count++
         }
@@ -372,9 +428,9 @@ class Typewriter {
       resolve()
     })
   }
-
+  // #endregion
   // HELPERS
-
+  // #region
   deleteChar() {
     this.text = this.text.slice(0, -1)
     this.options.onDeleteChar();
@@ -530,6 +586,7 @@ class Typewriter {
   render() {
     this.textEl.innerHTML = this.text
   }
+  // #endregion
 }
 
 export default Typewriter
