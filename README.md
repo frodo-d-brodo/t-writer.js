@@ -1,3 +1,15 @@
+## Why this fork exists
+
+This fork was made to add a few specific features, including...
+
+1. New callbacks
+
+- `onAddChar`: Triggered after a character has been appended.
+- `onDeleteChar`: Triggered after a character has been deleted.
+- `onLastChar`: Triggered after the final character of all enqueued strings has been appended.
+
+# Original Repo's Readme
+
 # T-Writer.js
 
 [![t-writer.js on NPM](https://img.shields.io/npm/v/t-writer.js.svg?style=flat-square)](https://www.npmjs.com/package/t-writer.js) 
