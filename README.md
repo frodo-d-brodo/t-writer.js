@@ -1,12 +1,17 @@
 ## Why this fork exists
 
-This fork was made to add a few specific features, including...
+This fork was made to add a few new options, including...
 
 1. New callbacks
 
 - `onAddChar`: Triggered after a character has been appended.
 - `onDeleteChar`: Triggered after a character has been deleted.
 - `onLastChar`: Triggered after the final character of all enqueued strings has been appended.
+
+2. Word wrap prevention (requires monospace font)
+
+- `preventWordWrap`: (boolean) Enables word wrap prevention for more aesthetic typewriter effect
+- `wordWrapLineLengthLimit`: (num) The maximum number of characters able to print on one line
 
 # Original Repo's Readme
 
