@@ -288,14 +288,20 @@ class Typewriter {
       if (trueCount > currentWordTrueBounds.startIndex && trueCount <= currentWordTrueBounds.endIndex)
         return '';
 
-      const currentWordBounds = {
-        startIndex: content.lastIndexOf(" ", count) + 1,
-        endIndex: content.indexOf(" ", count) - 1
-      }
+      const spaceBeforeWordIndex = content.lastIndexOf(" ", count);
+      const spaceAfterWordIndex = content.indexOf(" ", count);
+
+      const currentWordStartIndex = spaceBeforeWordIndex >= 0
+        ? spaceBeforeWordIndex + 1
+        : 0
+
+      const currentWordEndIndex = spaceAfterWordIndex > 0
+        ? spaceAfterWordIndex - 1
+        : content.length - 1
 
       currentWordTrueBounds = {
-        startIndex: currentWordBounds.startIndex + initialTextLength,
-        endIndex: currentWordBounds.endIndex + initialTextLength
+        startIndex: currentWordStartIndex + initialTextLength,
+        endIndex: currentWordEndIndex + initialTextLength
       }
 
       // If current char is 1st char of a word...
