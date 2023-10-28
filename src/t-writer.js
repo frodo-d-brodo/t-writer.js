@@ -284,6 +284,12 @@ class Typewriter {
           : ''
       }
 
+      // If current char is last char of a word and index is divisible by the limit...
+      if (trueCount === currentWordTrueBounds.endIndex && trueCount % this.options.wordWrapLineLengthLimit === 0) {
+        //REVIEW - this probably has unforeseen consequences due to impacting the total length
+        appendExtraSpace = true;
+      }
+
       // If current char is nth (n >= 2) char of the current word, return nothing
       //  (because newline logic only needs to run between words and on the first char of a word)
       if (trueCount > currentWordTrueBounds.startIndex && trueCount <= currentWordTrueBounds.endIndex)
@@ -322,11 +328,6 @@ class Typewriter {
           .some(x => x % this.options.wordWrapLineLengthLimit === 1)
           ? '\n'
           : ''
-      }
-
-      // If current char is last char of a word and index is divisible by the limit...
-      if (trueCount === currentWordTrueBounds.endIndex && trueCount % this.options.wordWrapLineLengthLimit === 0) {
-        appendExtraSpace = true; // this probably has unforeseen consequences due to impacting the total length
       }
     }
 
