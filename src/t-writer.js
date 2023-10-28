@@ -261,6 +261,7 @@ class Typewriter {
   // #region
   add(content) {
     let count = 0
+    let initialTextLength = this.text.length;
     let currentWordTrueBounds = {
       startIndex: 0,
       endIndex: 0,
@@ -268,12 +269,12 @@ class Typewriter {
     this.timestamp = Date.now()
 
     const newlineToPreventWordWrap = (content, count) => {
-      const trueLength = content.length + this.text.length;
+      const trueLength = content.length + initialTextLength;
       // If printed content + printing content is within the limit or divisible by the limit, return nothing
       if (trueLength <= this.options.wordWrapLineLengthLimit || trueLength % this.options.wordWrapLineLengthLimit === 0)
         return '';
 
-      const trueCount = count + this.text.length;
+      const trueCount = count + initialTextLength;
 
       // If limit would be surpassed while printing current char, return newline
       if (content[count] === " ") {
@@ -293,8 +294,8 @@ class Typewriter {
       }
 
       currentWordTrueBounds = {
-        startIndex: currentWordBounds.startIndex + this.text.length,
-        endIndex: currentWordBounds.endIndex + this.text.length
+        startIndex: currentWordBounds.startIndex + initialTextLength,
+        endIndex: currentWordBounds.endIndex + initialTextLength
       }
 
       // If current char is 1st char of a word...
