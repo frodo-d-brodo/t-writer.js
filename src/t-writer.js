@@ -81,6 +81,7 @@ class Typewriter {
   constructor(el, options) {
     this.el = el
     this.text = ''
+    this.extraSpaceCount = 0;
     this.queue = []
     this.options = Object.assign({}, defaultOptions, options)
 
@@ -263,6 +264,7 @@ class Typewriter {
     let count = 0
     let appendExtraSpace = false;
     let initialTextLength = this.text.length;
+    if (initialTextLength === 0) this.extraSpaceCount = 0;
     let currentWordTrueBounds = {
       startIndex: 0,
       endIndex: 0,
@@ -270,7 +272,7 @@ class Typewriter {
     this.timestamp = Date.now()
 
     const newlineToPreventWordWrap = (contentArg, countArg) => {
-      const trueLength = contentArg.length + initialTextLength;
+      const trueLength = contentArg.length + initialTextLength - this.extraSpaceCount;
       // If printed content + printing content is within the limit or divisible by the limit, return nothing
       if (trueLength <= this.options.wordWrapLineLengthLimit || trueLength % this.options.wordWrapLineLengthLimit === 0)
         return '';
@@ -288,6 +290,7 @@ class Typewriter {
       if (trueCount > 0 && trueCount === currentWordTrueBounds.endIndex && trueCount % this.options.wordWrapLineLengthLimit === 0) {
         //REVIEW - this probably has unforeseen consequences due to impacting the total length
         appendExtraSpace = true;
+        this.extraSpaceCount++;
       }
 
       // If current char is nth (n >= 2) char of the current word, return nothing
