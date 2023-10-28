@@ -285,7 +285,7 @@ class Typewriter {
       }
 
       // If current char is last char of a word and index is divisible by the limit...
-      if (trueCount === currentWordTrueBounds.endIndex && trueCount % this.options.wordWrapLineLengthLimit === 0) {
+      if (trueCount > 0 && trueCount === currentWordTrueBounds.endIndex && trueCount % this.options.wordWrapLineLengthLimit === 0) {
         //REVIEW - this probably has unforeseen consequences due to impacting the total length
         appendExtraSpace = true;
       }
