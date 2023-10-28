@@ -307,7 +307,7 @@ class Typewriter {
       // If current char is 1st char of a word...
       if(trueCount === currentWordTrueBounds.startIndex) {
         // -> If current position + the length of this word will not surpass the limit, return nothing
-        if (trueCount + currentWordTrueBounds.endIndex < this.options.wordWrapLineLengthLimit)
+        if (trueCount + (currentWordTrueBounds.endIndex - currentWordTrueBounds.startIndex) < this.options.wordWrapLineLengthLimit)
           return '';
 
         // -> If limit would be surpassed while printing this word, return newline
