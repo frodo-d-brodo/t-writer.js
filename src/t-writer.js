@@ -322,7 +322,9 @@ class Typewriter {
         const change = newStamp - this.timestamp
 
         if (change >= this.getTypeSpeed()) {
-          this.addChar(newlineToPreventWordWrap(content, count) + content[count])
+          this.options.preventWordWrap
+            ? this.addChar(newlineToPreventWordWrap(content, count) + content[count])
+            : this.addChar(content[count])
           this.timestamp = newStamp
           count++
         }
