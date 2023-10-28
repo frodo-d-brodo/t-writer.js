@@ -290,7 +290,7 @@ class Typewriter {
 
       const currentWordBounds = {
         startIndex: content.lastIndexOf(" ", count) + 1,
-        endIndex: content.indexOf(" ", count)
+        endIndex: content.indexOf(" ", count) - 1
       }
 
       currentWordTrueBounds = {
