@@ -271,7 +271,7 @@ class Typewriter {
       const trueLength = content.length + this.text.length;
       // If printed content + printing content is within the limit or divisible by the limit, return nothing
       if (trueLength <= this.options.wordWrapLineLengthLimit || trueLength % this.options.wordWrapLineLengthLimit === 0)
-        return;
+        return '';
 
       const trueCount = count + this.text.length;
 
@@ -285,7 +285,7 @@ class Typewriter {
       // If current char is nth (n >= 2) char of the current word, return nothing
       //  (because newline logic only needs to run between words and on the first char of a word)
       if (trueCount > currentWordTrueBounds.startIndex && trueCount <= currentWordTrueBounds.endIndex)
-        return;
+        return '';
 
       const currentWordBounds = {
         startIndex: content.lastIndexOf(" ", content[count]) + 1,
