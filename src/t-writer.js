@@ -261,6 +261,7 @@ class Typewriter {
   // #region
   add(content) {
     let count = 0
+    let appendExtraSpace = false;
     let initialTextLength = this.text.length;
     let currentWordTrueBounds = {
       startIndex: 0,
@@ -268,16 +269,16 @@ class Typewriter {
     }
     this.timestamp = Date.now()
 
-    const newlineToPreventWordWrap = (content, count) => {
-      const trueLength = content.length + initialTextLength;
+    const newlineToPreventWordWrap = (contentArg, countArg) => {
+      const trueLength = contentArg.length + initialTextLength;
       // If printed content + printing content is within the limit or divisible by the limit, return nothing
       if (trueLength <= this.options.wordWrapLineLengthLimit || trueLength % this.options.wordWrapLineLengthLimit === 0)
         return '';
 
-      const trueCount = count + initialTextLength;
+      const trueCount = countArg + initialTextLength;
 
       // If limit would be surpassed while printing current char, return newline
-      if (content[count] === " ") {
+      if (contentArg[countArg] === " ") {
         return trueCount % this.options.wordWrapLineLengthLimit === 1
           ? '\n'
           : ''
@@ -288,8 +289,8 @@ class Typewriter {
       if (trueCount > currentWordTrueBounds.startIndex && trueCount <= currentWordTrueBounds.endIndex)
         return '';
 
-      const spaceBeforeWordIndex = content.lastIndexOf(" ", count);
-      const spaceAfterWordIndex = content.indexOf(" ", count);
+      const spaceBeforeWordIndex = contentArg.lastIndexOf(" ", countArg);
+      const spaceAfterWordIndex = contentArg.indexOf(" ", countArg);
 
       const currentWordStartIndex = spaceBeforeWordIndex >= 0
         ? spaceBeforeWordIndex + 1
@@ -297,7 +298,7 @@ class Typewriter {
 
       const currentWordEndIndex = spaceAfterWordIndex > 0
         ? spaceAfterWordIndex - 1
-        : content.length - 1
+        : contentArg.length - 1
 
       currentWordTrueBounds = {
         startIndex: currentWordStartIndex + initialTextLength,
@@ -322,6 +323,11 @@ class Typewriter {
           ? '\n'
           : ''
       }
+
+      // If current char is last char of a word and index is divisible by the limit...
+      if (trueCount === currentWordTrueBounds.endIndex && trueCount % this.options.wordWrapLineLengthLimit === 0) {
+        appendExtraSpace = true; // this probably has unforeseen consequences due to impacting the total length
+      }
     }
 
     return new Promise((resolve, _) => {
@@ -334,9 +340,10 @@ class Typewriter {
 
         if (change >= this.getTypeSpeed()) {
           this.options.preventWordWrap
-            ? this.addChar(newlineToPreventWordWrap(content, count) + content[count])
+            ? this.addChar(newlineToPreventWordWrap(content, count) + content[count] + `${appendExtraSpace ? ' ' : ''}`)
             : this.addChar(content[count])
           this.timestamp = newStamp
+          appendExtraSpace = false
           count++
         }
         requestAnimationFrame(_step)
