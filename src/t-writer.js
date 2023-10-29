@@ -82,6 +82,7 @@ class Typewriter {
     this.el = el
     this.text = ''
     this.extraSpaceCount = 0;
+    this.extraNewlineCount = 0;
     this.queue = []
     this.options = Object.assign({}, defaultOptions, options)
 
@@ -264,7 +265,7 @@ class Typewriter {
     let count = 0
     let appendExtraSpace = false;
     let initialTextLength = this.text.length;
-    if (initialTextLength === 0) this.extraSpaceCount = 0;
+    if (initialTextLength === 0) this.extraSpaceCount = this.extraNewlineCount = 0;
     let currentWordTrueBounds = {
       startIndex: 0,
       endIndex: 0,
@@ -272,7 +273,7 @@ class Typewriter {
     this.timestamp = Date.now()
 
     const newlineToPreventWordWrap = (contentArg, countArg) => {
-      const trueLength = contentArg.length + initialTextLength - this.extraSpaceCount;
+      const trueLength = contentArg.length + initialTextLength - this.extraSpaceCount - this.extraNewlineCount;
       // If printed content + printing content is within the limit or divisible by the limit, return nothing
       if (trueLength <= this.options.wordWrapLineLengthLimit || trueLength % this.options.wordWrapLineLengthLimit === 0)
         return '';
@@ -281,14 +282,16 @@ class Typewriter {
 
       // If limit would be surpassed while printing current char, return newline
       if (contentArg[countArg] === " ") {
-        return trueCount % this.options.wordWrapLineLengthLimit === 1
-          ? '\n'
-          : ''
+        if (trueCount % this.options.wordWrapLineLengthLimit === 1) {
+          this.extraNewlineCount++;
+          return '\n';
+        }
+
+        return '';
       }
 
       // If current char is last char of a word and index is divisible by the limit...
       if (trueCount > 0 && trueCount === currentWordTrueBounds.endIndex && trueCount % this.options.wordWrapLineLengthLimit === 0) {
-        //REVIEW - this probably has unforeseen consequences due to impacting the total length
         appendExtraSpace = true;
         this.extraSpaceCount++;
       }
@@ -327,10 +330,15 @@ class Typewriter {
           (value, idx) => floorLimit + idx * delta
         );
 
-        return arrayRange(currentWordTrueBounds.startIndex, currentWordTrueBounds.endIndex, 1)
-          .some(x => x % this.options.wordWrapLineLengthLimit === 1)
-          ? '\n'
-          : ''
+        const needsNewLine = arrayRange(currentWordTrueBounds.startIndex, currentWordTrueBounds.endIndex, 1)
+          .some(x => x % this.options.wordWrapLineLengthLimit === 1);
+
+        if (needsNewLine) {
+          this.extraNewlineCount++;
+          return '\n';
+        }
+        
+        return '';
       }
     }
 
