@@ -280,10 +280,10 @@ class Typewriter {
 
       const trueCount = countArg + initialTextLength;
 
-      // If limit would be surpassed while printing current char, return newline
+      // If limit would be met by printing current space, return newline
       //REVIEW - "extra space" probably unnecessary, should probably just be newline
       if (contentArg[countArg] === " ") {
-        if (trueCount % this.options.wordWrapLineLengthLimit === 1) {
+        if (trueCount > 0 && trueCount % this.options.wordWrapLineLengthLimit === 0) {
           this.extraNewlineCount++;
           return '\n';
         }
