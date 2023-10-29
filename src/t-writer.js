@@ -280,6 +280,9 @@ class Typewriter {
 
       const trueCount = countArg + initialTextLength;
 
+      // If current char is a space then newline is unnecessary
+      if (contentArg[countArg] === " ") return '';
+
       // If limit would be met by printing current space, return newline
       //REVIEW - "extra space" probably unnecessary, should probably just be newline
       // if (contentArg[countArg] === " ") {
