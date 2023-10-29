@@ -264,8 +264,8 @@ class Typewriter {
   add(content) {
     let count = 0
     let appendExtraSpace = false;
-    let initialTextLength = this.text.length;
-    if (initialTextLength === 0) this.extraSpaceCount = this.extraNewlineCount = 0;
+    if (this.text.length === 0) this.extraSpaceCount = this.extraNewlineCount = 0;
+    let initialTextLength = this.text.length - this.extraSpaceCount - this.extraNewlineCount;
     let currentWordTrueBounds = {
       startIndex: 0,
       endIndex: 0,
@@ -278,7 +278,7 @@ class Typewriter {
       if (trueLength <= this.options.wordWrapLineLengthLimit || trueLength % this.options.wordWrapLineLengthLimit === 0)
         return '';
 
-      const trueCount = countArg + initialTextLength  - this.extraSpaceCount - this.extraNewlineCount;
+      const trueCount = countArg + initialTextLength;
 
       // If limit would be surpassed while printing current char, return newline
       //REVIEW - "extra space" probably unnecessary, should probably just be newline
