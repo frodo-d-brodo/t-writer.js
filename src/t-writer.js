@@ -278,7 +278,7 @@ class Typewriter {
       if (trueLength <= this.options.wordWrapLineLengthLimit || trueLength % this.options.wordWrapLineLengthLimit === 0)
         return '';
 
-      const trueCount = countArg + initialTextLength;
+      const trueCount = countArg + initialTextLength  - this.extraSpaceCount - this.extraNewlineCount;
 
       // If limit would be surpassed while printing current char, return newline
       if (contentArg[countArg] === " ") {
