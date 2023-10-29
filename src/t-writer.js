@@ -330,7 +330,7 @@ class Typewriter {
 
         // -> If limit would be surpassed while printing this word, return newline
         const mustPrependNewLine = arrayRange(currentWordTrueBounds.startIndex, currentWordTrueBounds.endIndex, 1)
-          .some(x => x % (this.options.wordWrapLineLengthLimit) === 0);
+          .some(x => x % (this.options.wordWrapLineLengthLimit) === 1);
 
         if (mustPrependNewLine) {
           this.extraNewlineCount++;
