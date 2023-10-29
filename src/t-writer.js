@@ -283,8 +283,19 @@ class Typewriter {
       // If current char is a space then newline is unnecessary
       if (contentArg[countArg] === " ") return '';
 
+      // If limit would be met by printing current space, return newline
+      //REVIEW - "extra space" probably unnecessary, should probably just be newline
+      // if (contentArg[countArg] === " ") {
+      //   if (trueCount > 0 && trueCount % this.options.wordWrapLineLengthLimit === 0) {
+      //     this.extraNewlineCount++;
+      //     return '\n';
+      //   }
+
+      //   return '';
+      // }
+
       // If current char is last char of a word and index is divisible by the limit...
-      if (trueCount > 0 && trueCount === currentWordTrueBounds.endIndex && trueCount % (this.options.wordWrapLineLengthLimit) === 0) {
+      if (trueCount > 0 && trueCount === currentWordTrueBounds.endIndex && trueCount % (this.options.wordWrapLineLengthLimit - 1) === 0) {
         appendNewLine = true;
         this.extraNewlineCount++;
         return '';
@@ -315,7 +326,7 @@ class Typewriter {
       // If current char is 1st char of a word...
       if(trueCount === currentWordTrueBounds.startIndex) {
         // -> If current position + the length of this word will not surpass the limit, return nothing
-        if (trueCount + (currentWordTrueBounds.endIndex - currentWordTrueBounds.startIndex + 1) < this.options.wordWrapLineLengthLimit - 1)
+        if (trueCount + (currentWordTrueBounds.endIndex - currentWordTrueBounds.startIndex + 1) < this.options.wordWrapLineLengthLimit + 1)
           return '';
 
         const arrayRange = (floorLimit, ceilingLimit, delta) =>
