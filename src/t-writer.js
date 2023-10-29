@@ -340,6 +340,11 @@ class Typewriter {
         //   this.extraNewlineCount++;
         //   return '\n';
         // }
+
+        if (needsNewLine) {
+          this.extraNewlineCount++;
+          return '\n';
+        }
         
         return '';
       }
