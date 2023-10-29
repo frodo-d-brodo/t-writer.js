@@ -295,11 +295,11 @@ class Typewriter {
       // }
 
       // If current char is last char of a word and index is divisible by the limit...
-      // if (trueCount > 0 && trueCount === currentWordTrueBounds.endIndex && trueCount % this.options.wordWrapLineLengthLimit === 0) {
-      //   appendExtraSpace = true;
-      //   this.extraSpaceCount++;
-      //   return '';
-      // }
+      if (trueCount > 0 && trueCount === currentWordTrueBounds.endIndex && trueCount % this.options.wordWrapLineLengthLimit === 0) {
+        appendNewLine = true;
+        this.extraNewlineCount++;
+        return '';
+      }
 
       // If current char is nth (n >= 2) char of the current word, return nothing
       //  (because newline logic only needs to run between words and on the first char of a word)
@@ -342,14 +342,6 @@ class Typewriter {
         if (mustPrependNewLine) {
           this.extraNewlineCount++;
           return '\n';
-        }
-
-        const mustAppendNewLine = arrayRange(currentWordTrueBounds.startIndex, currentWordTrueBounds.endIndex, 1)
-        .some(x => x % this.options.wordWrapLineLengthLimit === 0);
-
-        if (mustAppendNewLine) {
-          this.extraNewlineCount++;
-          appendNewLine = true;
         }
         
         return '';
