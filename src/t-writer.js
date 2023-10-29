@@ -295,6 +295,7 @@ class Typewriter {
       if (trueCount > 0 && trueCount === currentWordTrueBounds.endIndex && trueCount % this.options.wordWrapLineLengthLimit === 0) {
         appendExtraSpace = true;
         this.extraSpaceCount++;
+        return '';
       }
 
       // If current char is nth (n >= 2) char of the current word, return nothing
@@ -334,10 +335,11 @@ class Typewriter {
         const needsNewLine = arrayRange(currentWordTrueBounds.startIndex, currentWordTrueBounds.endIndex, 1)
           .some(x => x % this.options.wordWrapLineLengthLimit === 1);
 
-        if (needsNewLine && content[currentWordTrueBounds.endIndex + 1] !== " ") {
-          this.extraNewlineCount++;
-          return '\n';
-        }
+        // This doesn't work because it potentially needs to see the next enqueued content, if it even exists
+        // if (needsNewLine && content[currentWordTrueBounds.endIndex + 1] !== " ") {
+        //   this.extraNewlineCount++;
+        //   return '\n';
+        // }
         
         return '';
       }
