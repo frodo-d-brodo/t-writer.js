@@ -263,7 +263,7 @@ class Typewriter {
   // #region
   add(content) {
     let count = 0
-    let appendExtraSpace = false;
+    let appendNewLine = false;
     if (this.text.length === 0) this.extraSpaceCount = this.extraNewlineCount = 0;
     let initialTextLength = this.text.length - this.extraSpaceCount - this.extraNewlineCount;
     let currentWordTrueBounds = {
@@ -336,12 +336,20 @@ class Typewriter {
           (value, idx) => floorLimit + idx * delta
         );
 
-        const needsNewLine = arrayRange(currentWordTrueBounds.startIndex, currentWordTrueBounds.endIndex, 1)
+        const mustPrependNewLine = arrayRange(currentWordTrueBounds.startIndex, currentWordTrueBounds.endIndex, 1)
           .some(x => x % this.options.wordWrapLineLengthLimit === 1);
 
-        if (needsNewLine) {
+        if (mustPrependNewLine) {
           this.extraNewlineCount++;
           return '\n';
+        }
+
+        const mustAppendNewLine = arrayRange(currentWordTrueBounds.startIndex, currentWordTrueBounds.endIndex, 1)
+        .some(x => x % this.options.wordWrapLineLengthLimit === 0);
+
+        if (mustAppendNewLine) {
+          this.extraNewlineCount++;
+          appendNewLine = true;
         }
         
         return '';
@@ -358,10 +366,10 @@ class Typewriter {
 
         if (change >= this.getTypeSpeed()) {
           this.options.preventWordWrap
-            ? this.addChar(newlineToPreventWordWrap(content, count) + content[count] + `${appendExtraSpace ? ' ' : ''}`)
+            ? this.addChar(newlineToPreventWordWrap(content, count) + content[count] + `${appendNewLine ? '\n' : ''}`)
             : this.addChar(content[count])
           this.timestamp = newStamp
-          appendExtraSpace = false
+          appendNewLine = false
           count++
         }
         requestAnimationFrame(_step)
