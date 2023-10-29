@@ -304,11 +304,12 @@ class Typewriter {
         return '';
 
       const spaceBeforeWordIndex = contentArg.lastIndexOf(" ", countArg);
-      const spaceAfterWordIndex = contentArg.indexOf(" ", countArg);
 
       const currentWordStartIndex = spaceBeforeWordIndex >= 0
         ? spaceBeforeWordIndex + 1
         : 0
+
+      const spaceAfterWordIndex = contentArg.indexOf(" ", currentWordStartIndex);
 
       const currentWordEndIndex = spaceAfterWordIndex > 0
         ? spaceAfterWordIndex - 1
