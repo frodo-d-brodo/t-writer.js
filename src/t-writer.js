@@ -295,7 +295,7 @@ class Typewriter {
       // }
 
       // If current char is last char of a word and index is divisible by the limit...
-      if (trueCount > 0 && trueCount === currentWordTrueBounds.endIndex && trueCount % this.options.wordWrapLineLengthLimit === 0) {
+      if (trueCount > 0 && trueCount === currentWordTrueBounds.endIndex && trueCount % (this.options.wordWrapLineLengthLimit - 1) === 0) {
         appendNewLine = true;
         this.extraNewlineCount++;
         return '';
@@ -326,18 +326,18 @@ class Typewriter {
       // If current char is 1st char of a word...
       if(trueCount === currentWordTrueBounds.startIndex) {
         // -> If current position + the length of this word will not surpass the limit, return nothing
-        if (trueCount + (currentWordTrueBounds.endIndex - currentWordTrueBounds.startIndex + 1) < this.options.wordWrapLineLengthLimit)
+        if (trueCount + (currentWordTrueBounds.endIndex - currentWordTrueBounds.startIndex + 1) < this.options.wordWrapLineLengthLimit + 1)
           return '';
 
-        // -> If limit would be surpassed while printing this word, return newline
         const arrayRange = (floorLimit, ceilingLimit, delta) =>
           Array.from(
           { length: (ceilingLimit - floorLimit) / delta + 1 },
           (value, idx) => floorLimit + idx * delta
         );
 
+        // -> If limit would be surpassed while printing this word, return newline
         const mustPrependNewLine = arrayRange(currentWordTrueBounds.startIndex, currentWordTrueBounds.endIndex, 1)
-          .some(x => x % this.options.wordWrapLineLengthLimit === 1);
+          .some(x => x % (this.options.wordWrapLineLengthLimit + 1) === 0);
 
         if (mustPrependNewLine) {
           this.extraNewlineCount++;
