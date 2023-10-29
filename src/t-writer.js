@@ -282,14 +282,14 @@ class Typewriter {
 
       // If limit would be met by printing current space, return newline
       //REVIEW - "extra space" probably unnecessary, should probably just be newline
-      if (contentArg[countArg] === " ") {
-        if (trueCount > 0 && trueCount % this.options.wordWrapLineLengthLimit === 0) {
-          this.extraNewlineCount++;
-          return '\n';
-        }
+      // if (contentArg[countArg] === " ") {
+      //   if (trueCount > 0 && trueCount % this.options.wordWrapLineLengthLimit === 0) {
+      //     this.extraNewlineCount++;
+      //     return '\n';
+      //   }
 
-        return '';
-      }
+      //   return '';
+      // }
 
       // If current char is last char of a word and index is divisible by the limit...
       // if (trueCount > 0 && trueCount === currentWordTrueBounds.endIndex && trueCount % this.options.wordWrapLineLengthLimit === 0) {
