@@ -335,12 +335,6 @@ class Typewriter {
         const needsNewLine = arrayRange(currentWordTrueBounds.startIndex, currentWordTrueBounds.endIndex, 1)
           .some(x => x % this.options.wordWrapLineLengthLimit === 1);
 
-        // This doesn't work because it potentially needs to see the next enqueued content, if it even exists
-        // if (needsNewLine && content[currentWordTrueBounds.endIndex + 1] !== " ") {
-        //   this.extraNewlineCount++;
-        //   return '\n';
-        // }
-
         if (needsNewLine) {
           this.extraNewlineCount++;
           return '\n';
