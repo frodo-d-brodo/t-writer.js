@@ -81,8 +81,10 @@ class Typewriter {
   constructor(el, options) {
     this.el = el
     this.text = ''
+    //TODO - move these counters into closures in the helpers section
     this.extraSpaceCount = 0;
     this.extraNewlineCount = 0;
+    this.lengthSinceNewLine = 0;
     this.queue = []
     this.options = Object.assign({}, defaultOptions, options)
 
@@ -283,20 +285,24 @@ class Typewriter {
       // If current char is a space then newline is unnecessary
       if (contentArg[countArg] === " ") return '';
 
-      // If current char is last char of a word and index is divisible by the limit...
-      if (
-        trueCount > 0 &&
-        trueCount === currentWordTrueBounds.endIndex &&
-        trueCount % (this.options.wordWrapLineLengthLimit) === 0
-        ) {
-        appendNewLine = true;
-        this.extraNewlineCount++;
-        return '';
+      // If current char is last char of current word...
+      if (trueCount > 0 && trueCount === currentWordTrueBounds.endIndex) {
+        if (
+          (this.lengthSinceNewLine === 0 && trueCount % (this.options.wordWrapLineLengthLimit) === 0) ||
+          (this.lengthSinceNewLine > 0 && this.lengthSinceNewLine % (this.options.wordWrapLineLengthLimit) === 0)
+          ) {
+          appendNewLine = true;
+          this.extraNewlineCount++;
+          return '';
+        }
       }
 
       // If current char is nth (n >= 2) char of the current word, return nothing
-      //  (because newline logic only needs to run between words and on the first char of a word)
-      if (trueCount > currentWordTrueBounds.startIndex && trueCount <= currentWordTrueBounds.endIndex)
+      //  (because newline prepend logic only needs to run between words and on the first char of a word)
+      if (
+        trueCount > currentWordTrueBounds.startIndex &&
+        trueCount <= currentWordTrueBounds.endIndex
+        )
         return '';
 
       const spaceBeforeWordIndex = contentArg.lastIndexOf(" ", countArg);
@@ -311,6 +317,8 @@ class Typewriter {
         ? spaceAfterWordIndex - 1
         : contentArg.length - 1
 
+      const currentWordLength = currentWordEndIndex - currentWordStartIndex + 1;
+
       currentWordTrueBounds = {
         startIndex: currentWordStartIndex + initialTextLength,
         endIndex: currentWordEndIndex + initialTextLength
@@ -319,23 +327,36 @@ class Typewriter {
       // If current char is 1st char of a word...
       if(trueCount === currentWordTrueBounds.startIndex) {
         // -> If current position + the length of this word will not surpass the limit, return nothing
-        if (trueCount + (currentWordTrueBounds.endIndex - currentWordTrueBounds.startIndex + 1) < this.options.wordWrapLineLengthLimit)
+        if (trueCount + currentWordLength < this.options.wordWrapLineLengthLimit)
           return '';
 
+        // utility method
         const arrayRange = (floorLimit, ceilingLimit, delta) =>
           Array.from(
           { length: (ceilingLimit - floorLimit) / delta + 1 },
           (value, idx) => floorLimit + idx * delta
         );
 
-        // -> If limit would be surpassed while printing this word, return newline
-        const mustPrependNewLine = arrayRange(currentWordTrueBounds.startIndex, currentWordTrueBounds.endIndex, 1)
+        if (this.extraNewlineCount === 0) {
+          // -> If limit would be surpassed while printing this word, return newline
+          const mustPrependNewLine = arrayRange(currentWordTrueBounds.startIndex, currentWordTrueBounds.endIndex, 1)
+            .some(x => x % (this.options.wordWrapLineLengthLimit) === 1);
+
+          if (mustPrependNewLine) {
+            this.extraNewlineCount++;
+            return '\n';
+          }
+        } else {
+          const mustPrependNewLine = arrayRange(this.lengthSinceNewLine, this.lengthSinceNewLine + currentWordLength - 1, 1)
           .some(x => x % (this.options.wordWrapLineLengthLimit) === 1);
 
-        if (mustPrependNewLine) {
-          this.extraNewlineCount++;
-          return '\n';
+          if (mustPrependNewLine) {
+            this.extraNewlineCount++;
+            return '\n';
+          }
         }
+
+
         
         return '';
       }
@@ -350,12 +371,24 @@ class Typewriter {
         const change = newStamp - this.timestamp
 
         if (change >= this.getTypeSpeed()) {
-          this.options.preventWordWrap
-            ? this.addChar(newlineToPreventWordWrap(content, count) + content[count] + `${appendNewLine ? '\n' : ''}`)
-            : this.addChar(content[count])
+          let newLineCreated = false;
+          if (this.options.preventWordWrap) {
+            let prependNewLine = !!newlineToPreventWordWrap(content, count);
+            this.addChar(
+              (prependNewLine ? '\n' : '') +
+              content[count] +
+              (appendNewLine ? '\n' : '')
+            )
+            newLineCreated = prependNewLine || appendNewLine;
+          } else {
+            this.addChar(content[count])
+          }
+
           this.timestamp = newStamp
+          if (newLineCreated) this.lengthSinceNewLine = 0
           appendNewLine = false
           count++
+          if (this.extraNewlineCount > 0) this.lengthSinceNewLine++
         }
         requestAnimationFrame(_step)
       }
