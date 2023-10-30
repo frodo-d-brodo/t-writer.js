@@ -354,7 +354,7 @@ class Typewriter {
             this.extraNewlineCount++;
             return '\n';
           }
-        } else {
+        } else if (this.lengthSinceNewLine > 1) {
           const mustPrependNewLine = arrayRange(this.lengthSinceNewLine, this.lengthSinceNewLine + currentWordLength - 1, 1)
           .some(x => x % (this.options.wordWrapLineLengthLimit) === 1);
 
