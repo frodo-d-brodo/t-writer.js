@@ -274,6 +274,10 @@ class Typewriter {
     }
     this.timestamp = Date.now()
 
+    //REVIEW - This function got scope-creeped, its logic needs to be
+    //FIXME    re-implemented through more organized methods of
+    //         singular purpose
+    //         (e.g. shouldPrependNewline: bool, shouldAppendNewline: bool, helper methods...)
     const newlineToPreventWordWrap = (contentArg, countArg) => {
       const trueLength = contentArg.length + initialTextLength - this.extraSpaceCount - this.extraNewlineCount;
       // If printed content + printing content is within the limit, return nothing
