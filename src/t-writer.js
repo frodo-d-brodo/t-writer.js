@@ -289,7 +289,7 @@ class Typewriter {
       
       if (contentArg[countArg] === " ") {
         if (this.lengthSinceNewLine % this.options.wordWrapLineLengthLimit === 1)
-          return '\n';
+          appendNewLine = true;
         return '';
       }
 
