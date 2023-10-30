@@ -286,8 +286,12 @@ class Typewriter {
 
       const trueCount = countArg + initialTextLength;
 
-      // If current char is a space then newline is unnecessary
-      if (contentArg[countArg] === " ") return '';
+      
+      if (contentArg[countArg] === " ") {
+        if (this.lengthSinceNewLine % this.options.wordWrapLineLengthLimit === 1)
+          return '\n';
+        return '';
+      }
 
       // If current char is last char of current word...
       if (trueCount > 0 && trueCount === currentWordTrueBounds.endIndex) {
