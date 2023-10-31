@@ -393,7 +393,7 @@ class Typewriter {
           }
 
           this.timestamp = newStamp
-          if (newLineCreated) this.lengthSinceNewLine = 0
+          if (newLineCreated || this.extraNewlineCount === 0) this.lengthSinceNewLine = 0
           appendNewLine = false
           count++
           if (this.extraNewlineCount > 0) this.lengthSinceNewLine++
