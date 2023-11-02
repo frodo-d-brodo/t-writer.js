@@ -105,6 +105,14 @@ class Typewriter {
     return this
   }
 
+  //NOTE - adding unicode means delete now must be aware of unicode, but there's no support for that yet...
+  typeUnicode (str) {
+    this.queue.push({
+      type: 'unicode',
+      content: str
+    })
+  }
+
   strings (interval, ...arr) {
     arr.forEach((str, i) => {
       this.queue.push({
@@ -263,8 +271,10 @@ class Typewriter {
   // #endregion
   // ACTIONS (promises)
   // #region
-  add(content) {
+  add(content, isUnicode = false) {
     let count = 0
+    // If unicode, count must increase by 2; else, by 1
+    const countDelta = isUnicode ? 2 : 1;
     let appendNewLine = false;
     if (this.text.length === 0) this.extraSpaceCount = this.extraNewlineCount = 0;
     let initialTextLength = this.text.length - this.extraSpaceCount - this.extraNewlineCount;
@@ -347,7 +357,7 @@ class Typewriter {
 
         if (this.extraNewlineCount === 0) {
           // -> If limit would be surpassed while printing this word, return newline
-          const mustPrependNewLine = arrayRange(currentWordTrueBounds.startIndex, currentWordTrueBounds.endIndex, 1)
+          const mustPrependNewLine = arrayRange(currentWordTrueBounds.startIndex, currentWordTrueBounds.endIndex, countDelta)
             .some(x => x % (this.options.wordWrapLineLengthLimit) === 1);
 
           if (mustPrependNewLine) {
@@ -355,7 +365,7 @@ class Typewriter {
             return '\n';
           }
         } else if (this.lengthSinceNewLine > 1) {
-          const mustPrependNewLine = arrayRange(this.lengthSinceNewLine, this.lengthSinceNewLine + currentWordLength - 1, 1)
+          const mustPrependNewLine = arrayRange(this.lengthSinceNewLine, this.lengthSinceNewLine + currentWordLength - 1, countDelta)
           .some(x => x % (this.options.wordWrapLineLengthLimit) === 1);
 
           if (mustPrependNewLine) {
@@ -377,6 +387,7 @@ class Typewriter {
 
         const newStamp = Date.now()
         const change = newStamp - this.timestamp
+        const pendingChar = (isUnicode ? `${content[count]}${content[count+1]}` : content[count]);
 
         if (change >= this.getTypeSpeed()) {
           let newLineCreated = false;
@@ -384,19 +395,19 @@ class Typewriter {
             let prependNewLine = !!newlineToPreventWordWrap(content, count);
             this.addChar(
               (prependNewLine ? '\n' : '') +
-              content[count] +
+              pendingChar +
               (appendNewLine ? '\n' : '')
             )
             newLineCreated = prependNewLine || appendNewLine;
           } else {
-            this.addChar(content[count])
+            this.addChar(pendingChar)
           }
 
           this.timestamp = newStamp
           if (newLineCreated || this.extraNewlineCount === 0) this.lengthSinceNewLine = 0
           appendNewLine = false
-          count++
-          if (this.extraNewlineCount > 0) this.lengthSinceNewLine++
+          count+=countDelta
+          if (this.extraNewlineCount > 0) this.lengthSinceNewLine+=countDelta
         }
         requestAnimationFrame(_step)
       }
@@ -549,6 +560,9 @@ class Typewriter {
     switch (action.type) {
       case 'type':
         return this.add(action.content)
+
+      case 'unicode':
+        return this.add(action.content, true)
 
       case 'deleteChars':
         return this.delete(action.count)
